@@ -29,3 +29,8 @@ Run the procedure `COMPUTE_ATTRIBUTE_GRAPH.hdbprocedure` with input parameter **
 |1 | DAY | MONTH | 'f' |
 |1 | MONTH | YEAR | '+' |
 |1 | DAY | YEAR | 'f' |
+
+
+## Feature engineering scenario tables
+
+We use a modified PKDD'99 financial data: [download](https://drive.google.com/open?id=1KczF7rg6OHd7LaXZU16pCpeadacpHGXj)
