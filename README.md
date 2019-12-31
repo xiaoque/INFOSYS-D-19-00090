@@ -14,7 +14,7 @@
 * The attribute graph will be stored in table `"SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_EDGES" `.
 
 ## Example
-Dimension **TIME** (DAY -> MONTH -> YEAR), you need to insert following tuples into table `"SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES"` :
+Assuming a Dimension **TIME(DAY, MONTH, YEAR)** with hierarchy _time_ defined as: DAY -> MONTH -> YEAR, you need to insert following tuples into table `"SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES"` :
 
 | HIERARCHY_ID | NAME | LEVEL_NUM |
 | :- | :- | :- |
