@@ -10,7 +10,7 @@ BEGIN
 --- if attribute nodes are empty, then adds all dim id attributes
 
 DECLARE dynamicSql  VARCHAR(512);
-DECLARE BOTTOM_ATTR_NAME VARCHAR(200);
+DECLARE BOTTOM_ATTR INTEGER;
 DECLARE HIER_VALIDE INTEGER;
 DECLARE HIER_NODES INTEGER;
 
@@ -34,24 +34,13 @@ IF (:HIER_NODES > 0) THEN
 		"SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_EDGES"
 	WHERE HIERARCHY_ID = :HIERARCHY_ID
 	;
-	
-	--- Update hierarchy information with bottom attribute
-	-- CALL "SAP_HANA_IM_ESS"."sap.hana.im.ess.deploy.schemaComplement::DEPLOY_HIER_BOTTOM_ATT"(:HIERARCHY_ID);
-	
-	SELECT TOP 1 NAME INTO BOTTOM_ATTR_NAME
+		
+	SELECT TOP 1 LEVEL_NUM INTO BOTTOM_ATTR
 	FROM "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES"
 	WHERE HIERARCHY_ID = :HIERARCHY_ID
 	ORDER BY LEVEL_NUM DESC
 	;
 	
-	UPDATE "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::HIERARCHY_INSTANCE" INS
-		SET BOTTOM_ATT_ID = NODE.ATT_ID
-		FROM "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::HIERARCHY_INSTANCE" INS, 
-			"SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES" NODE
-		WHERE INS.HIERARCHY_ID = :HIERARCHY_ID
-			AND NODE.NAME = :BOTTOM_ATTR_NAME
-			AND NODE.HIERARCHY_ID = :HIERARCHY_ID
-	;
 	
 	SELECT COUNT(*) INTO HIER_VALIDE 
 	FROM "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::HIERARCHY_TO_CRAWL"
@@ -85,19 +74,10 @@ IF (:HIER_NODES > 0) THEN
 			FROM "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::HIERARCHY_TO_CRAWL"
 			WHERE HIERARCHY_ID = :HIERARCHY_ID
 				AND IS_LEAF = 1
-				AND LEVEL_NAME <> :BOTTOM_ATTR_NAME
+				AND LEVEL_NUM < :BOTTOM_ATTR
 		;
 		
 		
-		--- Mark attributes
-		UPDATE "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES"
-			SET IS_TERMINAL = 1
-			WHERE NAME IN 
-			(
-				SELECT LEVEL_NAME 
-				FROM :TERMINAL_NODE
-			)
-		;
 		
 		--- Set optional nodes (all level nodes below the terminal nodes)
 		UPDATE "SCH_COMP"."sap.hana.im.ess.eg.deploy.hier::ATTRIBUTE_GRAPH_NODES"
